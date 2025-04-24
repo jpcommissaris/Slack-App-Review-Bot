@@ -1,5 +1,14 @@
 # Slack App Review Bot
 
+## Installing Requirements
+- Python 3.x
+- Add venv (recommended): `python3 -m venv venv`
+- `source venv/bin/activate`
+- Required dependencies (install via `pip`):
+  ```bash
+  pip install -r requirements.txt
+  ```
+
 ## Creating the Slack App
 
 1. Create or login to your slack workspace.
