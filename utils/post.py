@@ -1,7 +1,14 @@
 import requests
 import json
+import os
+from dotenv import load_dotenv
 
-def post_to_slack_webhook(webhook_url, text):
+
+load_dotenv()  
+
+webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+
+def post_to_slack_webhook(text):
     payload = {"text": text}
     headers = {"Content-Type": "application/json"}
     try:

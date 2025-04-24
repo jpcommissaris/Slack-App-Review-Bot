@@ -38,3 +38,9 @@ curl -X POST -H 'Content-type: application/json' \
 ```
 
 Note - Keep your slack webhook URL secret. Access to this URL allows write access to your slack channel.
+
+
+## Usage
+
+### Test with "hello-world.py'
+- Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should post a message in your channel.
