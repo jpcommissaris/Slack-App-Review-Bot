@@ -8,6 +8,7 @@
   ```bash
   pip install -r requirements.txt
   ```
+- Optional (Pylance): select this venv as interpreter in vscode
 
 ## Creating the Slack App
 
