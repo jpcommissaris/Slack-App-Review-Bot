@@ -1,6 +1,7 @@
 from typing import TypedDict, Optional
 from datetime import datetime
 
+
 class RawReview(TypedDict):
     reviewId: str
     userName: str
@@ -19,7 +20,7 @@ def parse_review(review: RawReview) -> str:
     created_at = review["at"].strftime("%b %d, %Y %I:%M %p")
     version = review.get("reviewCreatedVersion")
     version_line = f"📱 Version: {version}" if version else ""
-    important = '🚨 ' if int(review['score']) == 1 else ''
+    important = "🚨 " if int(review["score"]) == 1 else ""
 
     return (
         "-----\n"
@@ -30,3 +31,20 @@ def parse_review(review: RawReview) -> str:
         f"{version_line}\n"
         "-----"
     )
+
+
+def parse_many_reviews(
+    reviews: RawReview,
+    title: str = "Many reviews below:",
+    max_reviews: int = 10,
+    empty_msg: str = "No reviews found",
+) -> str:
+    # max
+    filtered_reviews = reviews[:max_reviews]
+    if filtered_reviews:
+        reviewJoin = title
+        for review in filtered_reviews:
+            reviewJoin += parse_review(review) + "\n\n"
+    else:
+        reviewJoin = "No reviews found"
+    return reviewJoin

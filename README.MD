@@ -8,7 +8,8 @@
   ```bash
   pip install -r requirements.txt
   ```
-- Optional (Pylance): select this venv as interpreter in vscode
+- Optional (Pylance): Select this venv as interpreter in vscode
+- Optional: use "Black" as formatter
 
 ## Creating the Slack App
 
@@ -44,3 +45,6 @@ Note - Keep your slack webhook URL secret. Access to this URL allows write acces
 
 ### Test with "hello-world.py'
 - Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should post a message in your channel.
+
+### Test with "public-reviews.py'
+- Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should scrap & post.
