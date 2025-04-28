@@ -1,4 +1,5 @@
 # Slack App Review Bot
+- Slack bot that sends app review data into a slack channel of your choice.
 
 ## Installing Requirements
 - Python 3.x
@@ -47,4 +48,4 @@ Note - Keep your slack webhook URL secret. Access to this URL allows write acces
 - Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should post a message in your channel.
 
 ### Test with "public-reviews.py'
-- Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should scrap & post.
+- Run hello-world.py inside your virtual env. If everything was setup correctly the slack bot should scrap & post. Couple different example functions exist for different queries.
