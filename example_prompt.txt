@@ -1,0 +1,117 @@
+Prompt: Diagnose causes of low app reviews
+
+You are a product analyst. Read a JSON array of app reviews and identify the main and minor causes of low ratings. Use both keywords/themes and sentiment signals. Consider thumbsUpCount as a proxy for community agreement. Be specific and actionable.
+
+Input
+
+You will receive a JSON array named filtered_reviews, where each element has:
+
+content (string): the review text
+
+score (number, 1–2): the star rating (already filtered to low reviews)
+
+thumbsUpCount (number): how many users found the review helpful
+
+Example (real data will be longer):
+
+[
+  {"content": "Crashes on login after latest update", "score": 1, "thumbsUpCount": 42},
+  {"content": "Slow and freezes on Pixel 8", "score": 2, "thumbsUpCount": 18}
+]
+
+What to do
+
+Normalize signals
+
+Compute an impact score per review = w1 * (2.0 - score) + w2 * log1p(thumbsUpCount), with w1=1.0, w2=1.0. (You can adjust weights if needed but keep them close.)
+
+Use the impact score to weight clustering and ranking of issues.
+
+Extract issues
+
+Identify issues using keywords + short phrases (e.g., “login crash”, “can’t connect”, “paywall confusion”, “battery drain”, “slow sync”, “UI too small”, “update lost data”, “forced login”).
+
+Group semantically similar reviews under the same Cause.
+
+For each review, you may assign multiple Causes if appropriate (multi-label).
+
+Rank causes
+
+Aggregate by Cause and compute:
+
+reviewCount
+
+sumImpact (sum of impact scores)
+
+medianThumbsUp
+
+representativeQuotes (1–3 short snippets without PII)
+
+Sort primarily by sumImpact, then by reviewCount.
+
+Split into Main vs Minor
+
+Main causes: top ~5–8 causes by sumImpact (or any with ≥10% of total impact).
+
+Minor causes: remaining, only if they are coherent (avoid dumping singletons unless highly impactful).
+
+Actionability
+
+For each Cause, provide actionable guidance: “Repro/Context”, “Likely area” (e.g., auth, networking, performance, onboarding, billing), and suggested checks (e.g., “add retry + exponential backoff on token refresh”, “guard nil in session restore”, “optimize list virtualization”, “timeout/ retry for /sync endpoint”).
+
+Bias guards
+
+Be literal to the text; don’t infer beyond evidence.
+
+If a group mixes multiple distinct issues, split them.
+
+Output (JSON only)
+
+Return a single JSON object with this exact shape:
+
+{
+  "summary": {
+    "totalReviews": 0,
+    "totalImpact": 0,
+    "methodNotes": "string (briefly note any assumptions/weight tweaks)"
+  },
+  "mainCauses": [
+    {
+      "cause": "string (concise title, e.g., 'Login crashes after update')",
+      "signals": ["keywords/phrases..."],
+      "reviewCount": 0,
+      "sumImpact": 0,
+      "medianThumbsUp": 0,
+      "representativeQuotes": ["short quote 1", "short quote 2"],
+      "area": "one of: auth | networking | performance | UI/UX | onboarding | billing | data integrity | notifications | compatibility | accessibility | other",
+      "reproOrContext": "one-liner hypothesis of when it happens",
+      "suggestedChecks": ["actionable step 1", "actionable step 2", "actionable step 3"]
+    }
+  ],
+  "minorCauses": [
+    {
+      "cause": "string",
+      "signals": ["keywords/phrases..."],
+      "reviewCount": 0,
+      "sumImpact": 0,
+      "representativeQuotes": ["short quote"]
+    }
+  ],
+  "outliers": [
+    {
+      "reason": "why it didn't cluster (e.g., ambiguous/unique)",
+      "review": {"content": "string", "score": 0, "thumbsUpCount": 0},
+      "impact": 0
+    }
+  ]
+}
+
+Constraints
+
+No prose outside the JSON.
+
+Keep quotes short; redact names/emails.
+
+Prefer ISO words/phrases for signals (stable keywords you’d reuse in dashboards).
+
+If you adjust weights, record it in summary.methodNotes.

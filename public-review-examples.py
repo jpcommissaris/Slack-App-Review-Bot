@@ -3,6 +3,7 @@ from google_play_scraper import reviews, Sort
 from utils.parse import parse_review, parse_many_reviews
 from utils.post import post_to_slack_webhook
 from datetime import datetime, timedelta
+import json
 
 
 def latest_review(appId: str) -> str:
@@ -29,6 +30,50 @@ def latest_bad_review(appId: str) -> str:
         post_to_slack_webhook(parse_review(two_star[0]))
     else:
         post_to_slack_webhook("You have no new bad reviews!")
+
+
+# Example chat prompt.
+"""
+Hey Chat. 
+"""
+
+
+def all_low_reviews(appId: str) -> str:
+    print("Begin")
+    reviews_all = []
+    reviews1, continuation = reviews(appId, count=100)
+    reviews_all.extend(reviews1)
+
+    count = 0
+    while continuation and count < 20:
+        print("reviews", count)
+        all_reviewsX, continuation = reviews(
+            appId, count=1000, continuation_token=continuation
+        )
+        count += 1
+        print("reviews", continuation, len(reviews_all))
+        reviews_all.extend(all_reviewsX)
+
+    print("here", len(reviews_all), reviews_all[0])
+
+    filtered_reviews = []
+    cutoff_date = datetime.now() - timedelta(days=365)
+
+    # Filter reviews for date & keyword
+    for review in reviews_all:
+        review_date = datetime.strptime(review["at"].strftime("%Y-%m-%d"), "%Y-%m-%d")
+        if (int(review["score"]) <= 2) and review_date >= cutoff_date:
+            filtered_reviews.append(
+                {
+                    "content": review["content"],
+                    "score": review["score"],
+                    "thumbsUpCount": review["thumbsUpCount"],
+                }
+            )
+
+    # Write low reviews to a file
+    with open("low_reviews.json", "w", encoding="utf-8") as f:
+        json.dump(filtered_reviews, f, ensure_ascii=False, indent=2)
 
 
 def top_reviews(appId: str, score: int = None) -> str:
@@ -75,4 +120,4 @@ if __name__ == "__main__":
     # reviews_with_keyword_time(
     #     "com.quicken.acme", count=1000, days=30, keyword="finance"
     # )
-    top_reviews("com.quicken.acme", score=5)
+    all_low_reviews("com.quicken.acme")
