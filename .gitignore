@@ -1,6 +1,7 @@
 # ENV
 .env
 low_reviews.json
+high_reviews.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
